@@ -1,30 +1,51 @@
 <script>
-	export let name;
+  import RadiusSelect from "./components/RadiusSelect.svelte"
+  import GameArea from "./components/GameArea.svelte"
+  import Manual from "./components/Manual.svelte"
+  import { radiusState } from "./store"
+
+  let radius
+  let keyPressed
+
+  function handleKeydown(event) {
+    const keyActions = {
+      q: () => console.warn("q"),
+      w: () => console.warn("w"),
+      e: () => console.warn("e"),
+      a: () => console.warn("a"),
+      s: () => console.warn("s"),
+      d: () => console.warn("d"),
+    }
+
+    if (keyActions[event.key]) {
+      keyActions[event.key]()
+      keyPressed = event.key
+    }
+  }
+
+  radiusState.subscribe((value) => {
+    radius = value
+  })
 </script>
 
+<svelte:window on:keydown={handleKeydown} />
+
 <main>
-	<h1>Hello {name}!</h1>
-	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
+  <RadiusSelect {radius} />
+  <GameArea {radius} {keyPressed} />
+  <Manual {radius} />
 </main>
 
 <style>
-	main {
-		text-align: center;
-		padding: 1em;
-		max-width: 240px;
-		margin: 0 auto;
-	}
-
-	h1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
-	}
-
-	@media (min-width: 640px) {
-		main {
-			max-width: none;
-		}
-	}
+  main {
+    text-align: center;
+    padding: 1em;
+    max-width: 240px;
+    margin: 0 auto;
+  }
+  @media (min-width: 640px) {
+    main {
+      max-width: none;
+    }
+  }
 </style>
