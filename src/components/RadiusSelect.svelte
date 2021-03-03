@@ -12,7 +12,10 @@
 <section>
   <p>Select radius:</p>
   {#each AVALIABLE_RADIUS_VALUES as radiusValue}
-    <div on:click={() => updateRadius(radiusValue)} class={[radius === radiusValue ? "selected" : ""]}>
+    <div
+      on:click={() => updateRadius(radiusValue)}
+      class={radius === radiusValue && "selected"}
+    >
       <p>{radiusValue}</p>
     </div>
   {/each}
@@ -33,11 +36,22 @@
     flex: auto;
     border-radius: 16px;
     color: white;
-	max-width: 64px;
+    max-width: 64px;
+    align-items: center;
   }
-
   .selected {
     background-color: #1c3041;
     color: white;
+  }
+  @media (max-width: 300px) {
+    section {
+      flex-direction: column;
+      align-items: center;
+      padding: 8px;
+    }
+    div {
+      margin: 4px 0;
+      padding: 0 32px;
+    }
   }
 </style>
