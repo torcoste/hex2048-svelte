@@ -1,5 +1,6 @@
 <script>
   export let radius
+  export let cells
   export let keyPressed
 
   import { fade } from "svelte/transition"
@@ -8,6 +9,7 @@
 
   import GameStatus from "./GameStatus.svelte"
   import HexagonGrid from "./HexagonGrid.svelte"
+  import DataCells from "./DataCells.svelte"
 </script>
 
 {#if radius}
@@ -16,6 +18,7 @@
       class="gameArea"
       style="width: {GAME_AREA_WIDTH}vmin; height: {GAME_AREA_HEIGHT}vmin;"
     >
+      <DataCells {radius} {cells} />
       <HexagonGrid {radius} />
     </div>
 

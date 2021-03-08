@@ -1,11 +1,13 @@
 <script>
   import { AVALIABLE_RADIUS_VALUES } from "../constants"
-  import { radiusState } from "../store"
+  import { getNewCells } from "../service"
+  import { cellsState, radiusState } from "../store"
 
   export let radius
 
   const updateRadius = (radiusValue) => {
     radiusState.update(() => radiusValue)
+    getNewCells(radiusValue, []).then((value) => cellsState.update(() => value))
   }
 </script>
 

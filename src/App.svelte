@@ -2,9 +2,10 @@
   import RadiusSelect from "./components/RadiusSelect.svelte"
   import GameArea from "./components/GameArea.svelte"
   import Manual from "./components/Manual.svelte"
-  import { radiusState } from "./store"
+  import { radiusState, cellsState } from "./store"
 
   let radius
+  let cells = []
   let keyPressed
 
   function handleKeydown(event) {
@@ -26,13 +27,16 @@
   radiusState.subscribe((value) => {
     radius = value
   })
+  cellsState.subscribe((value) => {
+    cells = value
+  })
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
 
 <main>
   <RadiusSelect {radius} />
-  <GameArea {radius} {keyPressed} />
+  <GameArea {radius} {keyPressed} {cells} />
   <Manual {radius} />
 </main>
 
