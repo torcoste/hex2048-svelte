@@ -3,6 +3,7 @@
   import GameArea from "./components/GameArea.svelte"
   import Manual from "./components/Manual.svelte"
   import { radiusState, cellsState } from "./store"
+  import { getNewCells } from "./service"
 
   let radius
   let cells = []
@@ -24,8 +25,13 @@
     }
   }
 
-  radiusState.subscribe((value) => {
-    radius = value
+  radiusState.subscribe((radiusValue) => {
+    if (radiusValue) {
+      radius = radiusValue
+      getNewCells(radiusValue, []).then((cellsValue) =>
+        cellsState.update(() => cellsValue)
+      )
+    }
   })
   cellsState.subscribe((value) => {
     cells = value
