@@ -1,4 +1,4 @@
-export const AVALIABLE_RADIUS_VALUES = [2, 3, 4]
+export const AVALIABLE_RADIUS_VALUES = [2, 3, 4, 5, 6, 7, 8, 9]
 
 export const colors = {
   maximum_blue_purple: "#B2ABF2",

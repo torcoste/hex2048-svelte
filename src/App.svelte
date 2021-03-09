@@ -2,26 +2,17 @@
   import RadiusSelect from "./components/RadiusSelect.svelte"
   import GameArea from "./components/GameArea.svelte"
   import Manual from "./components/Manual.svelte"
-  import { radiusState, cellsState } from "./store"
+  import { moveCellsByKeyPressed, MOVE_KEYS_LIST } from "./GameManager"
+  import { radiusState, cellsState, isLoadingState } from "./store"
   import { getNewCells } from "./service"
 
   let radius
   let cells = []
-  let keyPressed
+  let isLoading = false
 
-  function handleKeydown(event) {
-    const keyActions = {
-      q: () => console.warn("q"),
-      w: () => console.warn("w"),
-      e: () => console.warn("e"),
-      a: () => console.warn("a"),
-      s: () => console.warn("s"),
-      d: () => console.warn("d"),
-    }
-
-    if (keyActions[event.key]) {
-      keyActions[event.key]()
-      keyPressed = event.key
+  const handleKeydown = ({ key }) => {
+    if (!!radius && !isLoading && MOVE_KEYS_LIST.includes(key)) {
+      moveCellsByKeyPressed(key, radius, cells)
     }
   }
 
@@ -36,13 +27,16 @@
   cellsState.subscribe((value) => {
     cells = value
   })
+  isLoadingState.subscribe((isLoadingValue) => {
+    isLoading = isLoadingValue
+  })
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
 
 <main>
   <RadiusSelect {radius} />
-  <GameArea {radius} {keyPressed} {cells} />
+  <GameArea {radius} {cells} />
   <Manual {radius} />
 </main>
 

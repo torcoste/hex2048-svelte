@@ -1,7 +1,6 @@
 <script>
   export let radius
   export let cells
-  export let keyPressed
 
   import { fade } from "svelte/transition"
 
@@ -21,10 +20,6 @@
       <DataCells {radius} {cells} />
       <HexagonGrid {radius} />
     </div>
-
-    {#if keyPressed}
-      <p>Key pressed: {keyPressed}</p>
-    {/if}
     <GameStatus />
   </section>
 {/if}

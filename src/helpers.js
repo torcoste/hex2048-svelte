@@ -17,7 +17,7 @@ export const getRadiusFromUrl = () => {
 
 // HexagonGrid
 
-const getColumnCount = (radius) => radius * 2 - 1
+export const getColumnCount = (radius) => radius * 2 - 1
 
 const getHexagonItemCount = (columnIndex, radius, columnCount) =>
   columnIndex > radius - 1
@@ -45,7 +45,12 @@ const getHexagonItemBorderWidth = (radius) =>
     ({
       2: 2.5,
       3: 1.25,
-      4: 0.775, // TODO: find out correlation and get rid this
+      4: 0.775,
+      5: 0.5,
+      6: 0.35,
+      7: 0.235,
+      8: 0.2,
+      9: 0.159, // TODO: find out correlation and get rid this magic numbers
     }[radius] || 0))()
 
 export const getHexagonGridParams = (radius) => {
@@ -95,7 +100,7 @@ export const getDataCellsArray = (radius, cells = []) =>
       })
   )
 
-const getCellValueFontSize = (radius) => 6.2 - radius
+const getCellValueFontSize = (radius) => Math.max(6.2 - radius, 1)
 
 export const getDataCellsParams = (radius) => {
   const fontSize = getCellValueFontSize(radius)

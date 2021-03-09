@@ -3,3 +3,4 @@ import { getRadiusFromUrl } from "./helpers"
 
 export const radiusState = writable(getRadiusFromUrl())
 export const cellsState = writable([])
+export const isLoadingState = writable(false)

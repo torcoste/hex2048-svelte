@@ -40,6 +40,7 @@
             viewBox="0 0 130 114"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
+            style="margin: {config.hexagon.borderWidth * 3}vmin;"
           >
             <path
               d="M130 57L97.5 113.292L32.5 113.292L-2.84124e-06 57L32.5 0.708349L97.5 0.708352L130 57Z"
@@ -67,8 +68,5 @@
   }
   span {
     position: absolute;
-  }
-  svg {
-    margin: 1vmin;
   }
 </style>
