@@ -7,8 +7,8 @@ export const getNewCells = async (radius, cells = []) => {
     method: "POST",
     body: JSON.stringify(cells),
   })
+  if (response) isLoadingState.update(() => false)
   if (response.status !== 200) return []
   const responseJson = await response.json()
-  if (responseJson) isLoadingState.update(() => false)
   return responseJson
 }
