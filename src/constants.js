@@ -1,3 +1,6 @@
+export const SERVER_URL =
+  "//68f02c80-3bed-4e10-a747-4ff774ae905a.pub.instances.scw.cloud"
+
 export const AVALIABLE_RADIUS_VALUES = [2, 3, 4, 5, 6, 7, 8, 9]
 
 export const colors = {
