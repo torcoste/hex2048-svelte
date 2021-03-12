@@ -31,3 +31,8 @@ export const dataCellColors = {
   4096: "red", // TODO: define more colors
   8192: "red",
 }
+
+export const GAME_STATUSES = {
+  playing: "playing",
+  game_over: "game-over",
+}

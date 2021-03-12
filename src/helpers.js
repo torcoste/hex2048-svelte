@@ -4,6 +4,7 @@ import {
   GAME_AREA_WIDTH,
   HEXAGON_ITEM_ASPECT_RATIO,
 } from "./constants.js"
+import { checkStepAvailability } from "./GameManager.js"
 
 export const getRadiusFromUrl = () => {
   const url = document.location.href
@@ -105,4 +106,22 @@ const getCellValueFontSize = (radius) => Math.max(6.2 - radius, 1)
 export const getDataCellsParams = (radius) => {
   const fontSize = getCellValueFontSize(radius)
   return { fontSize }
+}
+
+// Game Status (step availability)
+
+const getCellsCount = (radius) => {
+  const sumFromOneToN = (n) => (n * (n + 1)) / 2
+  const sumFromNToM = (n, m) => sumFromOneToN(m) - sumFromOneToN(n - 1)
+  const maxColumnCount = getColumnCount(radius)
+  return sumFromNToM(radius, maxColumnCount - 1) * 2 + maxColumnCount
+}
+
+export const isStepAvailable = (radius, cells) => {
+  if (!radius) return true
+
+  const isEveryCellFilled = cells.length === getCellsCount(radius)
+  if (!isEveryCellFilled) return true
+
+  return checkStepAvailability(radius, cells)
 }

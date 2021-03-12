@@ -5,13 +5,18 @@
   import { moveCellsByKeyPressed, MOVE_KEYS_LIST } from "./GameManager"
   import { radiusState, cellsState, isLoadingState } from "./store"
   import { getNewCells } from "./service"
+  import { isStepAvailable } from "./helpers"
+  import { GAME_STATUSES } from "./constants"
 
   let radius
   let cells = []
   let isLoading = false
+  let gameStatus
+
+  $: isPlaying = gameStatus === GAME_STATUSES.playing
 
   const handleKeydown = ({ key }) => {
-    if (!!radius && !isLoading && MOVE_KEYS_LIST.includes(key)) {
+    if (!!radius && !isLoading && isPlaying && MOVE_KEYS_LIST.includes(key)) {
       moveCellsByKeyPressed(key, radius, cells)
     }
   }
@@ -19,13 +24,16 @@
   radiusState.subscribe((radiusValue) => {
     if (radiusValue) {
       radius = radiusValue
+      gameStatus = GAME_STATUSES.playing
       getNewCells(radiusValue, []).then((cellsValue) =>
         cellsState.update(() => cellsValue)
       )
     }
   })
-  cellsState.subscribe((value) => {
-    cells = value
+  cellsState.subscribe((cellsValue) => {
+    cells = cellsValue
+    if (!isStepAvailable(radius, cellsValue))
+      gameStatus = GAME_STATUSES.game_over
   })
   isLoadingState.subscribe((isLoadingValue) => {
     isLoading = isLoadingValue
@@ -36,7 +44,7 @@
 
 <main>
   <RadiusSelect {radius} />
-  <GameArea {radius} {cells} />
+  <GameArea {radius} {cells} {gameStatus} />
   <Manual {radius} />
 </main>
 

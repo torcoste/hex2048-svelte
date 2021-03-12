@@ -11,6 +11,51 @@ const MOVE_DIRECTIONS = {
   bottom_left: "bottom-left",
 }
 
+// TODO: make it DRY during refactoring (groupCellsByDirectionAxis, groupCellsByEveryDirectionAxis, moveCells)
+
+const groupCellsByDirectionAxis = (direction, radius, cells) => {
+  const { axis, directAxis } = moveConfigDict[direction]
+  return new Array(getColumnCount(radius))
+    .fill([])
+    .map((_, index) =>
+      cells
+        .filter((cell) => cell[axis] === index - (radius - 1))
+        .sort((a, b) => b[directAxis] - a[directAxis])
+    )
+}
+
+export const groupCellsByEveryDirectionAxis = (radius, cells) => {
+  return [
+    MOVE_DIRECTIONS.top,
+    MOVE_DIRECTIONS.top_right,
+    MOVE_DIRECTIONS.top_left,
+  ].map((direction) => groupCellsByDirectionAxis(direction, radius, cells))
+}
+
+/**
+ * @param {} cellsGroupedByEveryDirectionAxis result of groupCellsByEveryDirectionAxis(radius, cells)
+ */
+const checkStepAvailabilityByCellsGroupedByEveryDirectionAxis = (
+  cellsGroupedByEveryDirectionAxis
+) =>
+  cellsGroupedByEveryDirectionAxis
+    .map((direction) =>
+      direction
+        .map((axis) =>
+          axis.some(
+            (cell, cellIndex, axisArray) =>
+              cellIndex && cell.value === axisArray[cellIndex - 1].value
+          )
+        )
+        .some((direcionAvaliableSteps) => direcionAvaliableSteps)
+    )
+    .some((direcionsAvaliableSteps) => direcionsAvaliableSteps)
+
+export const checkStepAvailability = (radius, cells) =>
+  checkStepAvailabilityByCellsGroupedByEveryDirectionAxis(
+    groupCellsByEveryDirectionAxis(radius, cells)
+  )
+
 export const MOVE_KEYS_LIST = ["q", "w", "e", "a", "s", "d"]
 
 const keyMoveDict = {

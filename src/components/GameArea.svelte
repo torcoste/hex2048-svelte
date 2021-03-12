@@ -1,6 +1,7 @@
 <script>
   export let radius
   export let cells
+  export let gameStatus
 
   import { fade } from "svelte/transition"
 
@@ -20,7 +21,7 @@
       <DataCells {radius} {cells} />
       <HexagonGrid {radius} />
     </div>
-    <GameStatus />
+    <GameStatus {gameStatus} />
   </section>
 {/if}
 
