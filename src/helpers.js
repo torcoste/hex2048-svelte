@@ -25,15 +25,6 @@ const getHexagonItemCount = (columnIndex, radius, columnCount) =>
     ? columnCount + (radius - 1) - columnIndex
     : columnIndex + radius
 
-export const getHexagonItemsArray = (radius) =>
-  new Array(getColumnCount(radius))
-    .fill(1)
-    .map((_, columnIndex, columns) =>
-      new Array(getHexagonItemCount(columnIndex, radius, columns.length)).fill(
-        1
-      )
-    )
-
 const getHexagonWidthCountInContainer = (radius) =>
   (radius + getColumnCount(radius)) / 2
 
@@ -86,6 +77,25 @@ const getCellCoords = (radius, columnIndex, itemIndex) => ({
       ? -(columnIndex - itemIndex)
       : -(columnIndex - (itemIndex + (columnIndex - radius + 1))),
 })
+
+export const getCellDataAttributes = (
+  radius,
+  columnIndex,
+  itemIndex,
+  cells = []
+) => {
+  const { x, y, z } = getCellCoords(radius, columnIndex, itemIndex)
+  const cellData = cells.find(
+    (cell) => cell.x === x && cell.y === y && cell.z === z
+  )
+  const value = cellData ? cellData.value : 0
+  return {
+    "data-x": x,
+    "data-y": y,
+    "data-z": z,
+    "data-value": value,
+  }
+}
 
 export const getDataCellsArray = (radius, cells = []) =>
   new Array(getColumnCount(radius)).fill(null).map((_, columnIndex, columns) =>

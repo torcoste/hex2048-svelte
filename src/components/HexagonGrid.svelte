@@ -1,11 +1,16 @@
 <script>
   export let radius
+  export let cells
 
   import { GAME_AREA_WIDTH, GAME_AREA_HEIGHT } from "../constants"
-  import { getHexagonItemsArray, getHexagonGridParams } from "../helpers"
+  import {
+    getHexagonGridParams,
+    getDataCellsArray,
+    getCellDataAttributes,
+  } from "../helpers"
 
   $: config = getHexagonGridParams(radius)
-  $: hexagonItemsArray = getHexagonItemsArray(radius)
+  $: hexagonItemsArray = getDataCellsArray(radius, cells)
 </script>
 
 <div
@@ -29,6 +34,7 @@
           itemIndex,
           columnIndex
         )}vmin;"
+        {...getCellDataAttributes(radius, columnIndex, itemIndex, cells)}
       />
     {/each}
   {/each}

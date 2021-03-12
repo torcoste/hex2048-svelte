@@ -19,7 +19,7 @@
       style="width: {GAME_AREA_WIDTH}vmin; height: {GAME_AREA_HEIGHT}vmin;"
     >
       <DataCells {radius} {cells} />
-      <HexagonGrid {radius} />
+      <HexagonGrid {radius} {cells} />
     </div>
     <GameStatus {gameStatus} />
   </section>
