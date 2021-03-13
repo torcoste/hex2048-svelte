@@ -2,41 +2,42 @@
   import RadiusSelect from "./components/RadiusSelect.svelte"
   import GameArea from "./components/GameArea.svelte"
   import Manual from "./components/Manual.svelte"
-  import { moveCellsByKeyPressed, MOVE_KEYS_LIST } from "./GameManager"
-  import { radiusState, cellsState, isLoadingState } from "./store"
-  import { getNewCells } from "./service"
-  import { isStepAvailable } from "./helpers"
-  import { GAME_STATUSES } from "./constants"
+  import { resetGame, tryMove, updateGameStatus } from "./GameManager"
+  import {
+    radiusState,
+    cellsState,
+    isLoadingState,
+    gameStatusState,
+  } from "./store"
+  import { isMoveKey } from "./helpers"
+  import { DEFAULT_VALUES } from "./constants"
 
   let radius
-  let cells = []
-  let isLoading = false
-  let gameStatus
-
-  $: isPlaying = gameStatus === GAME_STATUSES.playing
+  let cells = DEFAULT_VALUES.cells
+  let isLoading = DEFAULT_VALUES.isLoading
+  let gameStatus = DEFAULT_VALUES.gameStatus
 
   const handleKeydown = ({ key }) => {
-    if (!!radius && !isLoading && isPlaying && MOVE_KEYS_LIST.includes(key)) {
-      moveCellsByKeyPressed(key, radius, cells)
+    if (isMoveKey(key)) {
+      tryMove(radius, isLoading, gameStatus, key, cells)
     }
   }
 
   radiusState.subscribe((radiusValue) => {
     if (radiusValue) {
       radius = radiusValue
-      gameStatus = GAME_STATUSES.playing
-      getNewCells(radiusValue, []).then((cellsValue) =>
-        cellsState.update(() => cellsValue)
-      )
+      resetGame(radiusValue)
     }
   })
   cellsState.subscribe((cellsValue) => {
     cells = cellsValue
-    if (!isStepAvailable(radius, cellsValue))
-      gameStatus = GAME_STATUSES.game_over
+    updateGameStatus(radius, cellsValue)
   })
   isLoadingState.subscribe((isLoadingValue) => {
     isLoading = isLoadingValue
+  })
+  gameStatusState.subscribe((gameStatusValue) => {
+    gameStatus = gameStatusValue
   })
 </script>
 

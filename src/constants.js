@@ -3,6 +3,19 @@ export const SERVER_URL =
 
 export const AVALIABLE_RADIUS_VALUES = [2, 3, 4, 5, 6, 7, 8, 9]
 
+export const MOVE_KEYS_LIST = ["q", "w", "e", "a", "s", "d"]
+
+export const GAME_STATUSES = {
+  playing: "playing",
+  game_over: "game-over",
+}
+
+export const DEFAULT_VALUES = {
+  cells: [],
+  isLoading: false,
+  gameStatus: GAME_STATUSES.playing,
+}
+
 export const colors = {
   maximum_blue_purple: "#B2ABF2",
   claret: "#89043D",
@@ -33,9 +46,4 @@ export const dataCellColors = {
   2048: "rgb(237, 194, 46)",
   4096: "red", // TODO: define more colors
   8192: "red",
-}
-
-export const GAME_STATUSES = {
-  playing: "playing",
-  game_over: "game-over",
 }

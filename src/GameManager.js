@@ -1,6 +1,32 @@
-import { getColumnCount } from "./helpers"
+import { GAME_STATUSES } from "./constants"
+import { getColumnCount } from "./CellsManager"
+import { cellsState, gameStatusState } from "./store"
 import { getNewCells } from "./service"
-import { cellsState } from "./store"
+import { getThirdAxis } from "./helpers"
+import { pipe } from "./utils"
+
+export const resetGame = (radius) => {
+  cellsState.update(() => []) // TODO: remove line if it useless for tests
+  gameStatusState.update(() => GAME_STATUSES.playing)
+  getNewCells(radius, []).then((cellsValue) =>
+    cellsState.update(() => cellsValue)
+  )
+}
+
+export const tryMove = (radius, isLoading, gameStatus, key, cells) => {
+  const isPlaying = gameStatus === GAME_STATUSES.playing
+  if (!!radius && !isLoading && isPlaying) {
+    moveCells(keyMoveDict[key], radius, cells)
+  }
+}
+
+export const updateGameStatus = (radius, cells) => {
+  if (!radius) return
+  if (!isStepAvailable(radius, cells))
+    gameStatusState.update(() => GAME_STATUSES.game_over)
+}
+
+// Move Cells ("step")
 
 const MOVE_DIRECTIONS = {
   top: "top",
@@ -10,53 +36,6 @@ const MOVE_DIRECTIONS = {
   bottom_right: "bottom-right",
   bottom_left: "bottom-left",
 }
-
-// TODO: make it DRY during refactoring (groupCellsByDirectionAxis, groupCellsByEveryDirectionAxis, moveCells)
-
-const groupCellsByDirectionAxis = (direction, radius, cells) => {
-  const { axis, directAxis } = moveConfigDict[direction]
-  return new Array(getColumnCount(radius))
-    .fill([])
-    .map((_, index) =>
-      cells
-        .filter((cell) => cell[axis] === index - (radius - 1))
-        .sort((a, b) => b[directAxis] - a[directAxis])
-    )
-}
-
-export const groupCellsByEveryDirectionAxis = (radius, cells) => {
-  return [
-    MOVE_DIRECTIONS.top,
-    MOVE_DIRECTIONS.top_right,
-    MOVE_DIRECTIONS.top_left,
-  ].map((direction) => groupCellsByDirectionAxis(direction, radius, cells))
-}
-
-/**
- * @param {} cellsGroupedByEveryDirectionAxis result of groupCellsByEveryDirectionAxis(radius, cells)
- */
-const checkStepAvailabilityByCellsGroupedByEveryDirectionAxis = (
-  cellsGroupedByEveryDirectionAxis
-) =>
-  cellsGroupedByEveryDirectionAxis
-    .map((direction) =>
-      direction
-        .map((axis) =>
-          axis.some(
-            (cell, cellIndex, axisArray) =>
-              cellIndex && cell.value === axisArray[cellIndex - 1].value
-          )
-        )
-        .some((direcionAvaliableSteps) => direcionAvaliableSteps)
-    )
-    .some((direcionsAvaliableSteps) => direcionsAvaliableSteps)
-
-export const checkStepAvailability = (radius, cells) =>
-  checkStepAvailabilityByCellsGroupedByEveryDirectionAxis(
-    groupCellsByEveryDirectionAxis(radius, cells)
-  )
-
-export const MOVE_KEYS_LIST = ["q", "w", "e", "a", "s", "d"]
 
 const keyMoveDict = {
   q: MOVE_DIRECTIONS.top_left,
@@ -76,46 +55,91 @@ const moveConfigDict = {
   [MOVE_DIRECTIONS.bottom_right]: { axis: "z", directAxis: "x" },
 }
 
-const getThirdAxis = (moveAxis, directAxis) =>
-  ["x", "y", "z"].find((axis) => axis !== moveAxis && axis !== directAxis)
+const groupCellsByDirectionAxis = (direction, radius, cells) => {
+  const { axis, directAxis } = moveConfigDict[direction]
+  return new Array(getColumnCount(radius))
+    .fill([])
+    .map((_, index) =>
+      cells
+        .filter((cell) => cell[axis] === index - (radius - 1))
+        .sort((a, b) => b[directAxis] - a[directAxis])
+    )
+}
+
+const tryMergeCells = (cellsGroupedByDirectionAxis) =>
+  cellsGroupedByDirectionAxis
+    .reduce(
+      (acc, cur) =>
+        acc.length && acc[acc.length - 1].value === cur.value
+          ? [
+              ...acc.slice(0, acc.length - 1),
+              { ...acc[acc.length - 1], value: cur.value * 2 },
+              { ...cur, value: 0 },
+            ]
+          : [...acc, cur],
+      []
+    )
+    .reduce((acc, cur) => (!!cur.value ? [...acc, cur] : acc), [])
+
+const tryShiftCells = (radius, direction) => (cellsGroupedByDirectionAxis) => {
+  const { axis, directAxis } = moveConfigDict[direction]
+  return cellsGroupedByDirectionAxis.map((cell, index) => {
+    const moveAxisValue = cell[axis]
+    const directAxisValue = radius - 1 - Math.max(moveAxisValue, 0) - index
+    return {
+      ...cell,
+      [directAxis]: directAxisValue,
+      [getThirdAxis(axis, directAxis)]: -(moveAxisValue + directAxisValue),
+    }
+  })
+}
 
 const moveCells = async (direction, radius, cells) => {
-  const columnCount = getColumnCount(radius)
-
-  const { axis, directAxis } = moveConfigDict[direction]
-
-  const array = new Array(columnCount).fill([]).map((_, index) =>
-    cells
-      .filter((cell) => cell[axis] === index - (radius - 1))
-      .sort((a, b) => b[directAxis] - a[directAxis])
-      .reduce(
-        (acc, cur) =>
-          acc.length && acc[acc.length - 1].value === cur.value
-            ? [
-                ...acc.slice(0, acc.length - 1),
-                { ...acc[acc.length - 1], value: cur.value * 2 },
-                { ...cur, value: 0 },
-              ]
-            : [...acc, cur],
-        []
-      )
-      .reduce((acc, cur) => (!!cur.value ? [...acc, cur] : acc), [])
-      .map((cell, index) => {
-        const moveAxisValue = cell[axis]
-        const directAxisValue =
-          radius - 1 - (moveAxisValue > 0 ? moveAxisValue : 0) - index
-        return {
-          ...cell,
-          [directAxis]: directAxisValue,
-          [getThirdAxis(axis, directAxis)]: -(moveAxisValue + directAxisValue),
-        }
-      })
-  )
-
-  const movedCells = array.flat()
+  const movedCells = groupCellsByDirectionAxis(direction, radius, cells)
+    .map((line) => pipe(tryMergeCells, tryShiftCells(radius, direction))(line))
+    .flat()
   const newCells = await getNewCells(radius, movedCells)
   cellsState.update(() => [...movedCells, ...newCells])
 }
 
-export const moveCellsByKeyPressed = (key, radius, cells) =>
-  moveCells(keyMoveDict[key], radius, cells)
+// Game Status update
+
+const groupCellsByEveryDirectionAxis = (radius, cells) => {
+  return [
+    MOVE_DIRECTIONS.top,
+    MOVE_DIRECTIONS.top_right,
+    MOVE_DIRECTIONS.top_left,
+  ].map((direction) => groupCellsByDirectionAxis(direction, radius, cells))
+}
+
+const checkStepAvailability = (radius, cells) =>
+  groupCellsByEveryDirectionAxis(radius, cells)
+    .map((direction) =>
+      direction
+        .map((axis) =>
+          axis.some(
+            (cell, cellIndex, axisArray) =>
+              cellIndex && cell.value === axisArray[cellIndex - 1].value
+          )
+        )
+        .some((direcionAvaliableSteps) => direcionAvaliableSteps)
+    )
+    .some((direcionsAvaliableSteps) => direcionsAvaliableSteps)
+
+// Game Status (step availability)
+
+const getCellsCount = (radius) => {
+  const sumFromOneToN = (n) => (n * (n + 1)) / 2
+  const sumFromNToM = (n, m) => sumFromOneToN(m) - sumFromOneToN(n - 1)
+  const maxColumnCount = getColumnCount(radius)
+  return sumFromNToM(radius, maxColumnCount - 1) * 2 + maxColumnCount
+}
+
+const isStepAvailable = (radius, cells) => {
+  if (!radius || !cells.length) return true
+
+  const isEveryCellFilled = cells.length === getCellsCount(radius)
+  if (!isEveryCellFilled) return true
+
+  return checkStepAvailability(radius, cells)
+}
