@@ -11,6 +11,7 @@
   } from "./store"
   import { isMoveKey } from "./helpers"
   import { DEFAULT_VALUES } from "./constants"
+import GitHubLink from "./components/GitHubLink.svelte"
 
   let radius
   let cells = DEFAULT_VALUES.cells
@@ -47,6 +48,7 @@
   <RadiusSelect {radius} />
   <GameArea {radius} {cells} {gameStatus} />
   <Manual {radius} />
+  <GitHubLink />
 </main>
 
 <style>
