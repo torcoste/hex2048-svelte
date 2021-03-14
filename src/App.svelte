@@ -13,7 +13,7 @@
     gameStatusState,
     serverUrlState,
   } from "./store"
-  import { isMoveKey } from "./helpers"
+  import { isMoveKey, isGameAreaVisible } from "./helpers"
   import { DEFAULT_VALUES } from "./constants"
 
   let radius
@@ -29,7 +29,7 @@
   }
 
   radiusState.subscribe((radiusValue) => {
-    if (radiusValue) {
+    if (radiusValue && serverUrl) {
       radius = radiusValue
       resetGame(radiusValue, serverUrl)
     }
@@ -45,7 +45,10 @@
     gameStatus = gameStatusValue
   })
   serverUrlState.subscribe((serverUrlValue) => {
-    serverUrl = serverUrlValue
+    if (radius && serverUrlValue) {
+      serverUrl = serverUrlValue
+      resetGame(radius, serverUrlValue)
+    }
   })
 </script>
 
@@ -54,7 +57,11 @@
 <main>
   <ServerUrlSelector {serverUrl} />
   <RadiusSelect {radius} />
-  <GameArea {radius} {cells} />
+  <GameArea
+    isVisible={isGameAreaVisible(radius, gameStatus)}
+    {radius}
+    {cells}
+  />
   <GameStatus {gameStatus} />
   <Manual {radius} />
   <GitHubLink />

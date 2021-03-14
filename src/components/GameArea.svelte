@@ -1,4 +1,5 @@
 <script>
+  export let isVisible
   export let radius
   export let cells
 
@@ -7,10 +8,9 @@
   import GameAreaContainer from "./GameAreaContainer.svelte"
   import HexagonGrid from "./HexagonGrid.svelte"
   import DataCells from "./DataCells.svelte"
-  import GameStatus from "./GameStatus.svelte"
 </script>
 
-{#if radius}
+{#if isVisible}
   <section transition:fade>
     <GameAreaContainer type="parent">
       <DataCells {radius} {cells} />

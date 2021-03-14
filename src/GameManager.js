@@ -28,7 +28,7 @@ export const tryMove = (
 }
 
 export const updateGameStatus = (radius, cells) => {
-  if (!radius) return
+  if (!radius || !cells) return
   if (!isStepAvailable(radius, cells))
     gameStatusState.update(() => GAME_STATUSES.game_over)
 }

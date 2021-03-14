@@ -22,6 +22,7 @@ export const GAME_STATUSES = {
   playing: "playing",
   game_over: "game-over",
   round_select: "round-select",
+  network_unavailable: "network-unavailable",
 }
 
 export const DEFAULT_VALUES = {
