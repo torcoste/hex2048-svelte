@@ -34,9 +34,9 @@ export const tryMove = (
   cells,
   serverUrl
 ) => {
-  logKeyPressed(key)
   const isPlaying = gameStatus === GAME_STATUSES.playing
   if (!!radius && !isLoading && isPlaying) {
+    logKeyPressed(key)
     moveCells(keyMoveDict[key], radius, cells, serverUrl)
   }
 }
