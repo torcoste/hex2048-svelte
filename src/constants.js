@@ -5,15 +5,30 @@ export const AVALIABLE_RADIUS_VALUES = [2, 3, 4, 5, 6, 7, 8, 9]
 
 export const MOVE_KEYS_LIST = ["q", "w", "e", "a", "s", "d"]
 
+export const SERVER_URLS = [
+  {
+    id: "remote",
+    value: "//68f02c80-3bed-4e10-a747-4ff774ae905a.pub.instances.scw.cloud",
+    title: "Remote server",
+  },
+  {
+    id: "localhost",
+    value: "http://localhost:13337/",
+    title: "Local server",
+  },
+]
+
 export const GAME_STATUSES = {
   playing: "playing",
   game_over: "game-over",
+  round_select: "round-select",
 }
 
 export const DEFAULT_VALUES = {
   cells: [],
   isLoading: false,
-  gameStatus: GAME_STATUSES.playing,
+  gameStatus: GAME_STATUSES.round_select,
+  serverUrl: SERVER_URLS[0],
 }
 
 export const colors = {

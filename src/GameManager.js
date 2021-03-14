@@ -1,22 +1,29 @@
-import { GAME_STATUSES } from "./constants"
+import { DEFAULT_VALUES, GAME_STATUSES } from "./constants"
 import { getColumnCount } from "./CellsManager"
 import { cellsState, gameStatusState } from "./store"
 import { getNewCells } from "./service"
 import { getThirdAxis } from "./helpers"
 import { pipe } from "./utils"
 
-export const resetGame = (radius) => {
-  cellsState.update(() => []) // TODO: remove line if it useless for tests
+export const resetGame = (radius, serverUrl) => {
+  cellsState.update(() => DEFAULT_VALUES.cells) // TODO: remove line if it useless for tests
   gameStatusState.update(() => GAME_STATUSES.playing)
-  getNewCells(radius, []).then((cellsValue) =>
+  getNewCells(radius, DEFAULT_VALUES.cells, serverUrl).then((cellsValue) =>
     cellsState.update(() => cellsValue)
   )
 }
 
-export const tryMove = (radius, isLoading, gameStatus, key, cells) => {
+export const tryMove = (
+  radius,
+  isLoading,
+  gameStatus,
+  key,
+  cells,
+  serverUrl
+) => {
   const isPlaying = gameStatus === GAME_STATUSES.playing
   if (!!radius && !isLoading && isPlaying) {
-    moveCells(keyMoveDict[key], radius, cells)
+    moveCells(keyMoveDict[key], radius, cells, serverUrl)
   }
 }
 
@@ -94,11 +101,11 @@ const tryShiftCells = (radius, direction) => (cellsGroupedByDirectionAxis) => {
   })
 }
 
-const moveCells = async (direction, radius, cells) => {
+const moveCells = async (direction, radius, cells, serverUrl) => {
   const movedCells = groupCellsByDirectionAxis(direction, radius, cells)
     .map((line) => pipe(tryMergeCells, tryShiftCells(radius, direction))(line))
     .flat()
-  const newCells = await getNewCells(radius, movedCells)
+  const newCells = await getNewCells(radius, movedCells, serverUrl)
   cellsState.update(() => [...movedCells, ...newCells])
 }
 

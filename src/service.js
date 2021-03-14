@@ -1,9 +1,8 @@
-import { SERVER_URL } from "./constants"
 import { isLoadingState } from "./store"
 
-export const getNewCells = async (radius, cells = []) => {
+export const getNewCells = async (radius, cells, serverUrl) => {
   isLoadingState.update(() => true)
-  const response = await fetch(`${SERVER_URL}/${radius}`, {
+  const response = await fetch(`${serverUrl.value}/${radius}`, {
     method: "POST",
     body: JSON.stringify(cells),
   })
