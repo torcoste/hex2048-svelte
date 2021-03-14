@@ -13,7 +13,7 @@ export const SERVER_URLS = [
   },
   {
     id: "localhost",
-    value: "http://localhost:13337/",
+    value: "http://localhost:13337",
     title: "Local server",
   },
 ]
@@ -29,7 +29,7 @@ export const DEFAULT_VALUES = {
   cells: [],
   isLoading: false,
   gameStatus: GAME_STATUSES.round_select,
-  serverUrl: SERVER_URLS[0],
+  serverUrl: SERVER_URLS[1], // TODO: find out another desicion to pass first render (zeros) test
 }
 
 export const colors = {

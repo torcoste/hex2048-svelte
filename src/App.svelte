@@ -29,25 +29,27 @@
   }
 
   radiusState.subscribe((radiusValue) => {
-    if (radiusValue && serverUrl) {
-      radius = radiusValue
+    if (radiusValue && radius !== radiusValue) {
       resetGame(radiusValue, serverUrl)
+      radius = radiusValue
     }
   })
   cellsState.subscribe((cellsValue) => {
-    cells = cellsValue
-    updateGameStatus(radius, cellsValue)
+    if (cellsValue) {
+      cells = cellsValue
+      updateGameStatus(radius, cellsValue)
+    }
   })
   isLoadingState.subscribe((isLoadingValue) => {
-    isLoading = isLoadingValue
+    if (isLoading !== isLoadingValue) isLoading = isLoadingValue
   })
   gameStatusState.subscribe((gameStatusValue) => {
-    gameStatus = gameStatusValue
+    if (gameStatus !== gameStatusValue) gameStatus = gameStatusValue
   })
   serverUrlState.subscribe((serverUrlValue) => {
-    if (radius && serverUrlValue) {
+    if (serverUrl.id !== serverUrlValue.id) {
       serverUrl = serverUrlValue
-      resetGame(radius, serverUrlValue)
+      if (radius) resetGame(radius, serverUrlValue)
     }
   })
 </script>

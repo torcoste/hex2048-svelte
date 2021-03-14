@@ -16,5 +16,6 @@ export const getNewCells = async (radius, cells, serverUrl) => {
     console.error(error)
     isLoadingState.update(() => false)
     gameStatusState.update(() => GAME_STATUSES.network_unavailable)
+    return []
   }
 }

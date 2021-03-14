@@ -1,16 +1,26 @@
 import { DEFAULT_VALUES, GAME_STATUSES } from "./constants"
 import { getColumnCount } from "./CellsManager"
-import { cellsState, gameStatusState } from "./store"
+import { cellsState, gameStatusState, isLoadingState } from "./store"
 import { getNewCells } from "./service"
 import { getThirdAxis } from "./helpers"
 import { pipe } from "./utils"
 
 export const resetGame = (radius, serverUrl) => {
-  cellsState.update(() => DEFAULT_VALUES.cells) // TODO: remove line if it useless for tests
   gameStatusState.update(() => GAME_STATUSES.playing)
-  getNewCells(radius, DEFAULT_VALUES.cells, serverUrl).then((cellsValue) =>
-    cellsState.update(() => cellsValue)
-  )
+  cellsState.update(() => DEFAULT_VALUES.cells)
+  addNewCells(radius, [], serverUrl)
+}
+
+// TODO: make it with async/await instead of setTimeout
+const addNewCells = (radius, cells, serverUrl) => {
+  setTimeout(() => {
+    isLoadingState.update(() => true)
+    getNewCells(radius, cells, serverUrl)
+      .then((cellsValue) => cellsState.update(() => [...cells, ...cellsValue]))
+      .finally(() => {
+        isLoadingState.update(() => false)
+      })
+  }, 50)
 }
 
 export const tryMove = (
@@ -105,8 +115,10 @@ const moveCells = async (direction, radius, cells, serverUrl) => {
   const movedCells = groupCellsByDirectionAxis(direction, radius, cells)
     .map((line) => pipe(tryMergeCells, tryShiftCells(radius, direction))(line))
     .flat()
-  const newCells = await getNewCells(radius, movedCells, serverUrl)
-  cellsState.update(() => [...movedCells, ...newCells])
+  const needToRerender = !isCellsArraysEqual(cells, movedCells)
+  if (!needToRerender) return
+  cellsState.update(() => movedCells)
+  addNewCells(radius, movedCells, serverUrl)
 }
 
 // Game Status update
@@ -142,11 +154,29 @@ const getCellsCount = (radius) => {
   return sumFromNToM(radius, maxColumnCount - 1) * 2 + maxColumnCount
 }
 
+const isEveryCellFilled = (radius, cells) =>
+  cells.length === getCellsCount(radius)
+
 const isStepAvailable = (radius, cells) => {
   if (!radius || !cells.length) return true
-
-  const isEveryCellFilled = cells.length === getCellsCount(radius)
-  if (!isEveryCellFilled) return true
+  if (!isEveryCellFilled(radius, cells)) return true
 
   return checkStepAvailability(radius, cells)
 }
+
+// cells comparing
+
+const stringifyCell = (cell) => `${cell.x};${cell.y};${cell.z};${cell.value}`
+
+const stringifyCellsArray = (cellsArray) => cellsArray.map(stringifyCell)
+
+const isStringifiedCellsArraysEqual = (original, moved) => {
+  if (original.length !== moved.length) return false
+  return original.every((cell) => moved.includes(cell))
+}
+
+const isCellsArraysEqual = (original, moved) =>
+  isStringifiedCellsArraysEqual(
+    stringifyCellsArray(original),
+    stringifyCellsArray(moved)
+  )
