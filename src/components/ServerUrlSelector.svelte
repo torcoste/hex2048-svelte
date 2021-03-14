@@ -1,15 +1,14 @@
 <script>
-  import { DEFAULT_VALUES, SERVER_URLS } from "../constants"
+  import { SERVER_URLS } from "../constants"
   import { serverUrlState } from "../store"
   export let serverUrl
 
-  let selected = DEFAULT_VALUES.serverUrl.value
+  let selected
 
   $: if (selected && serverUrl.value !== selected)
     serverUrlState.update(() =>
       SERVER_URLS.find((item) => item.value === selected)
     )
-
 </script>
 
 <section>
@@ -17,7 +16,7 @@
   <select bind:value={selected} id="url-server">
     {#each SERVER_URLS as serverItem}
       <option
-        selected={serverItem.value === serverUrl.value}
+        selected={serverItem.value === (serverUrl && serverUrl.value)}
         id={serverItem.id}
         value={serverItem.value}>{serverItem.title}</option
       >

@@ -2,6 +2,7 @@ import { GAME_STATUSES } from "./constants"
 import { gameStatusState, isLoadingState } from "./store"
 
 export const getNewCells = async (radius, cells, serverUrl) => {
+  if (!serverUrl || !radius) return []
   try {
     isLoadingState.update(() => true)
     const response = await fetch(`${serverUrl.value}/${radius}`, {

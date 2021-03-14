@@ -20,7 +20,7 @@
   let cells = DEFAULT_VALUES.cells
   let isLoading = DEFAULT_VALUES.isLoading
   let gameStatus = DEFAULT_VALUES.gameStatus
-  let serverUrl = DEFAULT_VALUES.serverUrl
+  let serverUrl
 
   const handleKeydown = ({ key }) => {
     if (isMoveKey(key)) {
@@ -47,7 +47,7 @@
     if (gameStatus !== gameStatusValue) gameStatus = gameStatusValue
   })
   serverUrlState.subscribe((serverUrlValue) => {
-    if (serverUrl.id !== serverUrlValue.id) {
+    if (serverUrlValue && (serverUrl && serverUrl.id) !== serverUrlValue.id) {
       serverUrl = serverUrlValue
       if (radius) resetGame(radius, serverUrlValue)
     }
