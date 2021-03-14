@@ -2,7 +2,7 @@ import { DEFAULT_VALUES, GAME_STATUSES } from "./constants"
 import { getColumnCount } from "./CellsManager"
 import { cellsState, gameStatusState, isLoadingState } from "./store"
 import { getNewCells } from "./service"
-import { getThirdAxis } from "./helpers"
+import { getThirdAxis, logKeyPressed, logNewCells } from "./helpers"
 import { pipe } from "./utils"
 
 export const resetGame = (radius, serverUrl) => {
@@ -16,7 +16,10 @@ const addNewCells = (radius, cells, serverUrl) => {
   setTimeout(() => {
     isLoadingState.update(() => true)
     getNewCells(radius, cells, serverUrl)
-      .then((cellsValue) => cellsState.update(() => [...cells, ...cellsValue]))
+      .then((cellsValue) => {
+        logNewCells(cellsValue)
+        cellsState.update(() => [...cells, ...cellsValue])
+      })
       .finally(() => {
         isLoadingState.update(() => false)
       })
@@ -31,6 +34,7 @@ export const tryMove = (
   cells,
   serverUrl
 ) => {
+  logKeyPressed(key)
   const isPlaying = gameStatus === GAME_STATUSES.playing
   if (!!radius && !isLoading && isPlaying) {
     moveCells(keyMoveDict[key], radius, cells, serverUrl)

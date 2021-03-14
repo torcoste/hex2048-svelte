@@ -24,3 +24,21 @@ export const getThirdAxis = (moveAxis, directAxis) =>
 
 export const isGameAreaVisible = (radius, gameStatus) =>
   radius && gameStatus !== GAME_STATUSES.network_unavailable
+
+// log
+
+export const logKeyPressed = (key) => {
+  console.log(
+    `Key %c"${key.toUpperCase()}"%c pressed`,
+    "color:red; font-weight: bold;",
+    ""
+  )
+}
+
+export const logNewCells = (newCells) => {
+  console.log(
+    `%cNew cells: %c${JSON.stringify(newCells)}`,
+    "color:violet; font-weight: bold;",
+    ""
+  )
+}
