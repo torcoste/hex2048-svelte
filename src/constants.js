@@ -29,7 +29,6 @@ export const DEFAULT_VALUES = {
   cells: [],
   isLoading: false,
   gameStatus: GAME_STATUSES.round_select,
-  serverUrl: SERVER_URLS[1], // TODO: find out another desicion to pass first render (zeros) test
 }
 
 export const colors = {
