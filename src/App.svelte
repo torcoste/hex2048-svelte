@@ -22,9 +22,9 @@
   let gameStatus = DEFAULT_VALUES.gameStatus
   let serverUrl
 
-  const handleKeydown = ({ key }) => {
-    if (isMoveKey(key)) {
-      tryMove(radius, isLoading, gameStatus, key, cells, serverUrl)
+  const handleKeydown = ({ keyCode }) => {
+    if (isMoveKey(keyCode)) {
+      tryMove(radius, isLoading, gameStatus, keyCode, cells, serverUrl)
     }
   }
 

@@ -3,7 +3,34 @@ export const SERVER_URL =
 
 export const AVALIABLE_RADIUS_VALUES = [2, 3, 4, 5, 6, 7, 8, 9]
 
-export const MOVE_KEYS_LIST = ["q", "w", "e", "a", "s", "d"]
+export const MOVE_KEYS_LIST = [81, 87, 69, 65, 83, 68] // ["q", "w", "e", "a", "s", "d"]
+
+export const MOVE_DIRECTIONS = {
+  top: "top",
+  top_right: "top-right",
+  top_left: "top-left",
+  bottom: "bottom",
+  bottom_right: "bottom-right",
+  bottom_left: "bottom-left",
+}
+
+export const keyMoveDict = {
+  [MOVE_KEYS_LIST[0]]: MOVE_DIRECTIONS.top_left,
+  [MOVE_KEYS_LIST[1]]: MOVE_DIRECTIONS.top,
+  [MOVE_KEYS_LIST[2]]: MOVE_DIRECTIONS.top_right,
+  [MOVE_KEYS_LIST[3]]: MOVE_DIRECTIONS.bottom_left,
+  [MOVE_KEYS_LIST[4]]: MOVE_DIRECTIONS.bottom,
+  [MOVE_KEYS_LIST[5]]: MOVE_DIRECTIONS.bottom_right,
+}
+
+export const moveConfigDict = {
+  [MOVE_DIRECTIONS.top]: { axis: "x", directAxis: "y" },
+  [MOVE_DIRECTIONS.bottom]: { axis: "x", directAxis: "z" },
+  [MOVE_DIRECTIONS.top_right]: { axis: "y", directAxis: "x" },
+  [MOVE_DIRECTIONS.bottom_left]: { axis: "y", directAxis: "z" },
+  [MOVE_DIRECTIONS.top_left]: { axis: "z", directAxis: "y" },
+  [MOVE_DIRECTIONS.bottom_right]: { axis: "z", directAxis: "x" },
+}
 
 export const SERVER_URLS = [
   {

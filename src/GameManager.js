@@ -1,8 +1,14 @@
-import { DEFAULT_VALUES, GAME_STATUSES } from "./constants"
+import {
+  DEFAULT_VALUES,
+  GAME_STATUSES,
+  keyMoveDict,
+  moveConfigDict,
+  MOVE_DIRECTIONS,
+} from "./constants"
 import { getColumnCount } from "./CellsManager"
 import { cellsState, gameStatusState, isLoadingState } from "./store"
 import { getNewCells } from "./service"
-import { getThirdAxis, logKeyPressed, logNewCells } from "./helpers"
+import { getThirdAxis, logCellsMovement, logNewCells } from "./helpers"
 import { pipe } from "./utils"
 
 export const resetGame = (radius, serverUrl) => {
@@ -30,14 +36,13 @@ export const tryMove = (
   radius,
   isLoading,
   gameStatus,
-  key,
+  keyCode,
   cells,
   serverUrl
 ) => {
   const isPlaying = gameStatus === GAME_STATUSES.playing
   if (!!radius && !isLoading && isPlaying) {
-    logKeyPressed(key)
-    moveCells(keyMoveDict[key], radius, cells, serverUrl)
+    moveCells(keyMoveDict[keyCode], radius, cells, serverUrl)
   }
 }
 
@@ -48,33 +53,6 @@ export const updateGameStatus = (radius, cells) => {
 }
 
 // Move Cells ("step")
-
-const MOVE_DIRECTIONS = {
-  top: "top",
-  top_right: "top-right",
-  top_left: "top-left",
-  bottom: "bottom",
-  bottom_right: "bottom-right",
-  bottom_left: "bottom-left",
-}
-
-const keyMoveDict = {
-  q: MOVE_DIRECTIONS.top_left,
-  w: MOVE_DIRECTIONS.top,
-  e: MOVE_DIRECTIONS.top_right,
-  a: MOVE_DIRECTIONS.bottom_left,
-  s: MOVE_DIRECTIONS.bottom,
-  d: MOVE_DIRECTIONS.bottom_right,
-}
-
-const moveConfigDict = {
-  [MOVE_DIRECTIONS.top]: { axis: "x", directAxis: "y" },
-  [MOVE_DIRECTIONS.bottom]: { axis: "x", directAxis: "z" },
-  [MOVE_DIRECTIONS.top_right]: { axis: "y", directAxis: "x" },
-  [MOVE_DIRECTIONS.bottom_left]: { axis: "y", directAxis: "z" },
-  [MOVE_DIRECTIONS.top_left]: { axis: "z", directAxis: "y" },
-  [MOVE_DIRECTIONS.bottom_right]: { axis: "z", directAxis: "x" },
-}
 
 const groupCellsByDirectionAxis = (direction, radius, cells) => {
   const { axis, directAxis } = moveConfigDict[direction]
@@ -122,6 +100,7 @@ const moveCells = async (direction, radius, cells, serverUrl) => {
   const needToRerender = !isCellsArraysEqual(cells, movedCells)
   if (!needToRerender) return
   cellsState.update(() => movedCells)
+  logCellsMovement(direction)
   addNewCells(radius, movedCells, serverUrl)
 }
 

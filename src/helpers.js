@@ -12,7 +12,7 @@ export const getRadiusFromUrl = () => {
   return undefined
 }
 
-export const isMoveKey = (key) => MOVE_KEYS_LIST.includes(key)
+export const isMoveKey = (keyCode) => MOVE_KEYS_LIST.includes(keyCode)
 
 /**
  * @param {string} moveAxis "x", "y" or "z"
@@ -27,9 +27,9 @@ export const isGameAreaVisible = (radius, gameStatus) =>
 
 // log
 
-export const logKeyPressed = (key) => {
+export const logCellsMovement = (direction) => {
   console.log(
-    `Key %c"${key.toUpperCase()}"%c pressed`,
+    `Cells moved in %c${direction}%c direction`,
     "color:red; font-weight: bold;",
     ""
   )
