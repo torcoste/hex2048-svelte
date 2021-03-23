@@ -6,12 +6,14 @@
 
   export let type = "dataCell" // "dataCell" | "hexagonItem"
 
+  import { scale } from "svelte/transition"
   import { getHexagonGridParams } from "../CellsManager"
 
   $: config = getHexagonGridParams(radius)
 </script>
 
 <div
+  transition:scale
   class={type}
   style="
         width: {config.hexagon.width}vmin;      

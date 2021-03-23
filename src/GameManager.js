@@ -23,7 +23,7 @@ const addNewCells = (radius, cells, serverUrl) => {
       .finally(() => {
         isLoadingState.update(() => false)
       })
-  }, 50)
+  }, 150)
 }
 
 export const tryMove = (
