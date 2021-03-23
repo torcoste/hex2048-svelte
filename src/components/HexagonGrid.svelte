@@ -11,7 +11,7 @@
 
 <GameAreaContainer>
   {#each hexagonItemsArray as column, columnIndex}
-    {#each column as _, itemIndex}
+    {#each column as _, itemIndex (`hexagonGrid:${radius};${columnIndex};${itemIndex}`)}
       <Cell
         type="hexagonItem"
         {radius}

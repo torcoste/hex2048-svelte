@@ -17,7 +17,7 @@
 
 <GameAreaContainer>
   {#each dataCellsArray as column, columnIndex}
-    {#each column as item, itemIndex}
+    {#each column as item, itemIndex (`dataCell:${radius};${columnIndex};${itemIndex}`)}
       {#if item}
         <Cell {radius} {columnIndex} {itemIndex}>
           <svg
